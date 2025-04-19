@@ -1,0 +1,262 @@
+npx create-next-app@latest ./
+
+prompt :
+
+1. i am creating a saas platform that users could use to paste a piece of text and check for plagiarism and also see if it is a ai generated one .  start by creating a landing page for my saas .
+
+2. use clerk documentation : https://dashboard.clerk.com/
+
+3. use edin ai :
+
+a) AI Content Detection  : https://app.edenai.run/bricks/text/ai-detection
+
+```
+
+implement the ai content detection feature on our app 
+
+i want to use edinAi api for this:
+
+const axios = require("axios");
+
+const options = {
+  method: "POST",
+  url: "https://api.edenai.run/v2/text/ai_detection",
+  headers: {
+    authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOGYwNmQ2Y2QtMjI5Yi00YTBjLWI0ZGMtMTBjNDBmZjkyMDJmIiwidHlwZSI6ImFwaV90b2tlbiJ9._f8eNDku7jZr9bxz9Kfo3SaOUaJ3qORfromZ_0v99yg",
+  },
+  data: {
+    providers: "winstonai",
+    text: "Your text goes here", // Change this to the text you want to analyze
+  },
+};
+
+axios
+  .request(options)
+  .then((response) => {
+    console.log(response.data);
+  })
+  .catch((error) => {
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+    } else {
+      console.error("Error:", error.message);
+    }
+  });
+
+
+the above given is the code snippet to use the api.
+
+the below given is the response format of the api :
+
+{
+  "sapling": {
+    "ai_score": 0.970070276931997,
+    "items": [
+      {
+        "text": "The panther, also known as the black panther, is a magnificent and enigmatic creature that captivates the imagination of many.",
+        "prediction": "ai-generated",
+        "ai_score": 0.9990817176020741,
+        "ai_score_detail": 0.9990817176020741
+      },
+       
+      {
+        "text": "Habitat loss, poaching, and illegal wildlife trade pose significant threats to their existence. Various organizations and governments are working tirelessly to protect these magnificent creatures through initiatives such as establishing protected areas, promoting sustainable land use practices, and raising awareness about their importance in the natural world.",
+        "prediction": "ai-generated",
+        "ai_score": 0.9999,
+        "ai_score_detail": 0.9999
+      }
+    ],
+    "cost": 0
+  }
+}
+
+create a new page at /ai-detection and implement the same
+
+```
+
+
+b) AI Detection :
+
+```
+nextup,lets go ahead and implement plagiarism  detection
+
+
+
+using the following api from edin ai for this :
+
+const axios = require("axios").default;
+
+const options = {
+  method: "POST",
+  url: "https://api.edenai.run/v2/text/plagia_detection",
+  headers: {
+    authorization: "Bearer null",
+  },
+  data: {
+    providers: "originalityai",
+    text: "Your text",
+    title: "Your optional title",
+  },
+};
+
+axios
+  .request(options)
+  .then((response) => {
+    console.log(response.data);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
+and the response format will be :
+
+{
+  "winstonai": {
+    "plagia_score": 100,
+    "items": [
+      {
+        "text": "Rumored Samsung Gadgets For 2023: Galaxy Z Flip 5, Z Fold 5 and More - MSN",
+        "candidates": [
+          {
+            "url": "https://www.msn.com/en-us/news/technology/rumored-samsung-gadgets-for-2023-galaxy-z-flip-5-z-fold-5-and-more/ar-AA16w9Ee",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "Wearables have also become a large part of how Samsung intends to differentiate its phones from those of other Android device makers. It's a strategy to create a web of products that keep people hooked, much like Apple's range of devices."
+          }
+        ]
+      },
+      {
+        "text": "Originality.ai API Documentation",
+        "candidates": [
+          {
+            "url": "https://docs.originality.ai/api-v1-0-reference",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "Should Samsung stick to its annual routine, we can expect to see new foldable phones and wearable devices in August. The company also previewed new designs for ..."
+          },
+          {
+            "url": "https://docs.originality.ai/api-v1-0-reference",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... The company also previewed new designs for bendable phones and tablets earlier this year, hinting that the company may be planning to expand beyond the Z ..."
+          },
+          {
+            "url": "https://docs.originality.ai/api-v1-0-reference",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "Though Samsung regularly releases new products across many categories, including TVs, home appliances and monitors, I'm most interested in where its mobile ..."
+          },
+          {
+            "url": "https://docs.originality.ai/api-v1-0-reference",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "Wearables have also become a large part of how Samsung intends to differentiate its phones from those of other Android device makers. It's a strategy to create ..."
+          },
+          {
+            "url": "https://docs.originality.ai/api-v1-0-reference",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... It's a strategy to create a web of products that keep people hooked, much like Apple's range of devices.\", \"matches\": [ { \"website\": \"https://www.cnet.com ..."
+          }
+        ]
+      },
+      {
+        "text": "Rumored Samsung Gadgets For 2023: Galaxy Z Flip 5, Z Fold 5 and More - CNET",
+        "candidates": [
+          {
+            "url": "https://www.cnet.com/tech/mobile/galaxy-s23-z-fold-5-and-more-samsung-gadgets-rumored-for-2023/",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... Though Samsung regularly releases new products across many categories, including TVs, home appliances and monitors, I'm most interested in ..."
+          },
+          {
+            "url": "https://www.cnet.com/tech/mobile/galaxy-s23-z-fold-5-and-more-samsung-gadgets-rumored-for-2023/",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "Wearables have also become a large part of how Samsung intends to differentiate its phones from those of other Android device makers. It's a ..."
+          },
+          {
+            "url": "https://www.cnet.com/tech/mobile/galaxy-s23-z-fold-5-and-more-samsung-gadgets-rumored-for-2023/",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "Wearables have also become a large part of how Samsung intends to differentiate its phones from those of other Android device makers. It's a strategy to create a web of products that keep people hooked, much like Apple's range of devices."
+          }
+        ]
+      },
+      {
+        "text": "The Biggest Rumored Samsung Gadgets to Expect in 2023 - YouTube",
+        "candidates": [
+          {
+            "url": "https://www.youtube.com/watch?v=7DXADBWKlgA",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... Though Samsung regularly releases new products across many categories, including TVs, home appliances and monitors, I'm most interested in where its mobile ..."
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=7DXADBWKlgA",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... influence than most other tech companies on the devices we carry in our pockets each day. Wearables have also become a large part of how Samsung intends to ..."
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=7DXADBWKlgA",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... It's a strategy to create a web of products that keep people hooked, much like Apple's range of devices. Here are the rumored Samsung products I'm most ..."
+          }
+        ]
+      },
+      {
+        "text": "Galaxy Z Fold 5 and Other Samsung Gadgets to Look for in 2023 IT ...",
+        "candidates": [
+          {
+            "url": "https://www.rbsitsoftwaresolution.com/blog/galaxy-z-fold-5-and-other-samsung-gadgets-to-look-for-in-2023.html",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... the company may be planning to expand beyond the Z Fold and Z Flip in the near future. Though Samsung regularly releases new products across many categories ..."
+          }
+        ]
+      },
+      {
+        "text": "Galaxy S23, Z Fold 5 and more Samsung gadgets rumored for 2023 - US Today News",
+        "candidates": [
+          {
+            "url": "https://ustoday.news/galaxy-s23-z-fold-5-and-more-samsung-gadgets-rumored-for-2023/",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "... the company may be planning to expand beyond the Z Fold and Z Flip in the near future. Although Samsung regularly releases new products in ..."
+          }
+        ]
+      },
+      {
+        "text": "Galaxy Z Fold 5 and Other Samsung Gadgets to Look for in 2023",
+        "candidates": [
+          {
+            "url": "https://www.umaconferences.com/galaxy-z-fold-5-and-other-samsung-gadgets-to-look-for-in-2023/",
+            "plagia_score": 1,
+            "prediction": "plagiarized",
+            "plagiarized_text": "The Galaxy S23 launch may be far behind us, but Samsung likely has plenty more to announce in 2023. That's if history repeats itself."
+          }
+        ]
+      }
+    ],
+    "cost": 0
+  }
+}
+
+create the page at - /plagiarism-detection
+
+
+```
+
+example:
+
+
+Nature is an inherent character or constitution,[1] particularly of the ecosphere or the universe as a whole. In this general sense nature refers to the laws, elements and phenomena of the physical world, including life. Although humans are part of nature, human activity or humans as a whole are often described as at times at odds, or outright separate and even superior to nature.[2]
+
+
+4. chnge ui:
+
+everything works
+
+i want to chnge the entire ui of the app to make it more modern , minimalistic and light theme
